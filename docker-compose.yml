@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  schema-configuration:
+    build: ./schema-configuration/
+    environment:
+      - MONGO_SERVER=db
+    depends_on:
+      db:
+        condition: service_started
+    ports:
+      - 3000:80
+  db:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    volumes:
+      - db_data:/data/db
+    ports:
+      - 27:27017
+  client-service:
+    build: ./client-service/
+    environment:
+      - MONGO_SERVER=db-central
+    depends_on:
+      db-central:
+        condition: service_started
+    ports:
+      - 3001:80
+  db-central:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    volumes:
+      - db_data_central:/data/db
+    ports:
+      - 28:27017
+networks:
+  default:
+    driver: bridge
+volumes:
+  db_data:
+  db_data_central:
