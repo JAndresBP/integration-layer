@@ -15,9 +15,9 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost()]
-    public async Task<StatusCodeResult> Post(Client client)
+    public async Task<StatusCodeResult> Post([FromBody]Client client)
     {
-         var filter = Builders<Client>.Filter.Eq(r => r.Id, client.Id);
+        var filter = Builders<Client>.Filter.Eq(r => r.Id, client.Id);
         await _collection.ReplaceOneAsync(filter, client, new ReplaceOptions{IsUpsert = true});
         return Ok();
     }

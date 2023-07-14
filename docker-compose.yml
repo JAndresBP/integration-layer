@@ -4,6 +4,8 @@ services:
     build: ./schema-configuration/
     environment:
       - MONGO_SERVER=db
+      - MONGO_USERNAME=root
+      - MONGO_PASSWORD=example
     depends_on:
       db:
         condition: service_started
@@ -18,15 +20,31 @@ services:
       - db_data:/data/db
     ports:
       - 27:27017
+  parser:
+    build: ./parser/
+    environment:
+      - MONGO_SERVER=db
+      - MONGO_USERNAME=root
+      - MONGO_PASSWORD=example
+      - CLIENTS_SERVICE=http://client-service:80
+    depends_on:
+      db:
+        condition: service_started
+      client-service:
+        condition: service_started
+    ports:
+      - 3001:80
   client-service:
     build: ./client-service/
     environment:
       - MONGO_SERVER=db-central
+      - MONGO_USERNAME=root
+      - MONGO_PASSWORD=example
     depends_on:
       db-central:
         condition: service_started
     ports:
-      - 3001:80
+      - 3002:80
   db-central:
     image: mongo
     environment:
